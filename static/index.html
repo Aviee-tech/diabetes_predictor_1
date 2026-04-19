@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diabetes Risk Predictor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a6b5a;
+    --primary-light: #e8f5f1;
+    --primary-mid: #2d9679;
+    --accent: #f0783a;
+    --accent-light: #fff3ed;
+    --danger: #d94040;
+    --danger-light: #fef0f0;
+    --success: #1a6b5a;
+    --success-light: #e8f5f1;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.05);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--primary);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 20px; height: 20px; fill: white; }
+  .logo-text { font-size: 17px; font-weight: 600; color: var(--gray-900); }
+  .logo-text span { color: var(--primary); }
+
+  .model-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary-light);
+    border: 1px solid #b2ddd3;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary);
+  }
+  .model-badge .dot {
+    width: 7px; height: 7px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #f0faf6 0%, #fafffe 50%, #f5f9ff 100%);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    padding: 5px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-500);
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    font-weight: 400;
+    color: var(--gray-900);
+    line-height: 1.2;
+    margin-bottom: 0.8rem;
+  }
+  .hero h1 span { color: var(--primary); }
+  .hero p {
+    font-size: 16px;
+    color: var(--gray-500);
+    max-width: 520px;
+    margin: 0 auto 1.8rem;
+    line-height: 1.6;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary);
+    display: block;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+  .stat-divider {
+    width: 1px; background: var(--gray-200);
+    align-self: stretch;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  /* ── FORM CARD ── */
+  .form-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+  .form-card-header {
+    padding: 1.4rem 1.8rem;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .form-card-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+  .form-card-header p {
+    font-size: 13px;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+  .clear-btn {
+    background: none;
+    border: 1px solid var(--gray-200);
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--gray-500);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .clear-btn:hover { border-color: var(--gray-300); color: var(--gray-700); background: var(--gray-50); }
+
+  .form-body { padding: 1.8rem; }
+
+  /* Section label */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-400);
+    margin-bottom: 1rem;
+    margin-top: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label:first-child { margin-top: 0; }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-100);
+  }
+  .section-icon {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+
+  /* Field grid */
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .field-full { grid-column: 1 / -1; }
+
+  /* Field */
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .field label .unit {
+    font-weight: 400;
+    color: var(--gray-400);
+    font-size: 11px;
+  }
+  .field-hint { font-size: 11px; color: var(--gray-400); }
+
+  .input-wrap { position: relative; }
+  .field input {
+    width: 100%;
+    height: 42px;
+    padding: 0 14px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--gray-900);
+    background: var(--white);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .field input::-webkit-outer-spin-button,
+  .field input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .field input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26,107,90,0.1);
+  }
+  .field input.error { border-color: var(--danger); }
+  .field input.error:focus { box-shadow: 0 0 0 3px rgba(217,64,64,0.1); }
+
+  /* Range slider field */
+  .slider-field { gap: 8px; }
+  .slider-row { display: flex; align-items: center; gap: 10px; }
+  .slider-row input[type=range] {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    background: var(--gray-200);
+    border-radius: 2px;
+    border: none;
+    box-shadow: none;
+  }
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px rgba(26,107,90,0.3);
+  }
+  .slider-row input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+  }
+  .slider-val {
+    width: 52px;
+    height: 32px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 6px;
+    text-align: center;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--gray-900);
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .slider-val::-webkit-outer-spin-button,
+  .slider-val::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .slider-val:focus { border-color: var(--primary); }
+  .range-labels { display: flex; justify-content: space-between; margin-top: 2px; }
+  .range-labels span { font-size: 10px; color: var(--gray-400); }
+
+  /* Submit btn */
+  .submit-btn {
+    width: 100%;
+    height: 50px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 1.8rem;
+    letter-spacing: 0.01em;
+  }
+  .submit-btn:hover { background: #155a4b; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,107,90,0.3); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { background: var(--gray-300); cursor: not-allowed; transform: none; box-shadow: none; }
+  .submit-btn svg { width: 18px; height: 18px; fill: white; }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── SIDEBAR ── */
+  .sidebar { display: flex; flex-direction: column; gap: 1.2rem; }
+
+  /* Result card */
+  .result-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .result-card.hidden { display: none; }
+
+  .result-header {
+    padding: 1.4rem 1.6rem 1rem;
+    text-align: center;
+  }
+  .result-icon {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .result-icon.low { background: var(--success-light); }
+  .result-icon.high { background: var(--danger-light); }
+
+  .result-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .result-label.low { color: var(--success); }
+  .result-label.high { color: var(--danger); }
+
+  .result-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 0.3rem;
+  }
+  .result-title.low { color: var(--success); }
+  .result-title.high { color: var(--danger); }
+
+  .result-subtitle { font-size: 13px; color: var(--gray-400); }
+
+  /* Probability bar */
+  .prob-section { padding: 0 1.6rem 1.4rem; }
+  .prob-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .prob-label-row span { font-size: 13px; color: var(--gray-500); }
+  .prob-label-row strong { font-size: 22px; font-weight: 600; }
+  .prob-label-row strong.low { color: var(--success); }
+  .prob-label-row strong.high { color: var(--danger); }
+  .prob-bar-bg {
+    height: 10px;
+    background: var(--gray-100);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .prob-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+  .prob-bar-fill.low { background: var(--primary); }
+  .prob-bar-fill.high { background: var(--danger); }
+  .prob-zone-labels { display: flex; justify-content: space-between; }
+  .prob-zone-labels span { font-size: 10px; color: var(--gray-300); }
+
+  /* Risk breakdown */
+  .breakdown-section {
+    border-top: 1px solid var(--gray-100);
+    padding: 1.2rem 1.6rem;
+  }
+  .breakdown-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray-400);
+    margin-bottom: 0.8rem;
+  }
+  .factor-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--gray-50);
+  }
+  .factor-item:last-child { border-bottom: none; }
+  .factor-name { font-size: 13px; color: var(--gray-700); }
+  .factor-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 50px;
+  }
+  .factor-badge.normal { background: #e8f5f1; color: var(--success); }
+  .factor-badge.warning { background: #fff8e6; color: #b07a10; }
+  .factor-badge.risk { background: var(--danger-light); color: var(--danger); }
+
+  /* Info card */
+  .info-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    padding: 1.4rem 1.6rem;
+  }
+  .info-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info-card h3 .icon {
+    width: 28px; height: 28px;
+    background: var(--primary-light);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--gray-50);
+    font-size: 13px;
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-key { color: var(--gray-500); }
+  .metric-val { font-weight: 600; color: var(--gray-900); }
+  .metric-val.green { color: var(--primary); }
+
+  /* Reference card */
+  .ref-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .ref-card-header {
+    padding: 1rem 1.4rem;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ref-table { width: 100%; border-collapse: collapse; }
+  .ref-table th {
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray-400);
+    text-align: left;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .ref-table td {
+    padding: 9px 14px;
+    font-size: 13px;
+    color: var(--gray-700);
+    border-bottom: 1px solid var(--gray-50);
+  }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .ref-table tr:hover td { background: var(--gray-50); }
+
+  /* Disclaimer */
+  .disclaimer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-400);
+    line-height: 1.6;
+    padding: 1rem 0;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--gray-900);
+    color: white;
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { background: var(--danger); }
+
+  /* Responsive */
+  @media (max-width: 860px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { order: -1; }
+    .hero h1 { font-size: 1.8rem; }
+    .field-grid.three { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .field-grid { grid-template-columns: 1fr; }
+    .field-grid.three { grid-template-columns: 1fr; }
+    .stats-row { gap: 1.5rem; }
+    .stat-divider { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 14.5h-2v-5h2v5zm0-7h-2V7h2v2.5z"/></svg>
+      </div>
+      <span class="logo-text">Diabetes<span>Predict</span></span>
+    </a>
+    <div class="model-badge">
+      <div class="dot"></div>
+      <span id="modelName">Loading model...</span>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">🩺 AI-Powered Health Assessment</div>
+  <h1>Predict Your <span>Diabetes Risk</span><br>in Seconds</h1>
+  <p>Enter your health parameters below and our machine learning model will assess your diabetes risk with clinical accuracy.</p>
+  <div class="stats-row">
+    <div class="stat-item">
+      <span class="stat-num" id="heroAccuracy">–</span>
+      <span class="stat-label">Accuracy</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num" id="heroAuc">–</span>
+      <span class="stat-label">ROC-AUC Score</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num">768</span>
+      <span class="stat-label">Training Samples</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num">22</span>
+      <span class="stat-label">Features Used</span>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- FORM CARD -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <div>
+        <h2>Health Parameters</h2>
+        <p>Fill in all fields for the most accurate prediction</p>
+      </div>
+      <button class="clear-btn" onclick="clearForm()">Clear All</button>
+    </div>
+
+    <div class="form-body">
+      <form id="predictForm" novalidate>
+
+        <!-- Basic Info -->
+        <div class="section-label">Basic Information</div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="pregnancies">Pregnancies <span class="unit">(count)</span></label>
+            <input type="number" id="pregnancies" min="0" max="20" step="1" placeholder="e.g. 2">
+          </div>
+          <div class="field">
+            <label for="age">Age <span class="unit">(years)</span></label>
+            <input type="number" id="age" min="1" max="120" step="1" placeholder="e.g. 35">
+          </div>
+        </div>
+
+        <!-- Blood Measurements -->
+        <div class="section-label">Blood Measurements</div>
+        <div class="field-grid">
+          <div class="field slider-field">
+            <label for="glucose">Glucose <span class="unit">(mg/dL)</span></label>
+            <div class="slider-row">
+              <input type="range" id="glucoseSlider" min="50" max="300" step="1" value="120" oninput="syncSlider('glucose', this.value)">
+              <input type="number" class="slider-val" id="glucose" min="50" max="300" step="1" value="120" oninput="syncRange('glucoseSlider', this.value)">
+            </div>
+            <div class="range-labels"><span>50</span><span>300</span></div>
+          </div>
+
+          <div class="field slider-field">
+            <label for="insulin">Insulin <span class="unit">(µU/mL)</span></label>
+            <div class="slider-row">
+              <input type="range" id="insulinSlider" min="0" max="900" step="1" value="100" oninput="syncSlider('insulin', this.value)">
+              <input type="number" class="slider-val" id="insulin" min="0" max="900" step="1" value="100" oninput="syncRange('insulinSlider', this.value)">
+            </div>
+            <div class="range-labels"><span>0</span><span>900</span></div>
+          </div>
+
+          <div class="field slider-field">
+            <label for="blood_pressure">Blood Pressure <span class="unit">(mmHg)</span></label>
+            <div class="slider-row">
+              <input type="range" id="blood_pressureSlider" min="30" max="200" step="1" value="80" oninput="syncSlider('blood_pressure', this.value)">
+              <input type="number" class="slider-val" id="blood_pressure" min="30" max="200" step="1" value="80" oninput="syncRange('blood_pressureSlider', this.value)">
+            </div>
+            <div class="range-labels"><span>30</span><span>200</span></div>
+          </div>
+
+          <div class="field slider-field">
+            <label for="skin_thickness">Skin Thickness <span class="unit">(mm)</span></label>
+            <div class="slider-row">
+              <input type="range" id="skin_thicknessSlider" min="0" max="100" step="1" value="20" oninput="syncSlider('skin_thickness', this.value)">
+              <input type="number" class="slider-val" id="skin_thickness" min="0" max="100" step="1" value="20" oninput="syncRange('skin_thicknessSlider', this.value)">
+            </div>
+            <div class="range-labels"><span>0</span><span>100</span></div>
+          </div>
+        </div>
+
+        <!-- Body Metrics -->
+        <div class="section-label">Body Metrics</div>
+        <div class="field-grid">
+          <div class="field slider-field">
+            <label for="bmi">BMI <span class="unit">(kg/m²)</span></label>
+            <div class="slider-row">
+              <input type="range" id="bmiSlider" min="10" max="70" step="0.1" value="28" oninput="syncSlider('bmi', this.value)">
+              <input type="number" class="slider-val" id="bmi" min="10" max="70" step="0.1" value="28" oninput="syncRange('bmiSlider', this.value)">
+            </div>
+            <div class="range-labels"><span>10</span><span>70</span></div>
+          </div>
+
+          <div class="field slider-field">
+            <label for="diabetes_pedigree">Pedigree Function</label>
+            <div class="slider-row">
+              <input type="range" id="diabetes_pedigreeSlider" min="0.05" max="2.5" step="0.001" value="0.5" oninput="syncSlider('diabetes_pedigree', this.value)">
+              <input type="number" class="slider-val" id="diabetes_pedigree" min="0.05" max="2.5" step="0.001" value="0.5" oninput="syncRange('diabetes_pedigreeSlider', this.value)">
+            </div>
+            <div class="range-labels"><span>0.05</span><span>2.5</span></div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          <span id="submitText">Predict Diabetes Risk</span>
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- RESULT CARD (hidden initially) -->
+    <div class="result-card hidden" id="resultCard">
+      <div class="result-header">
+        <div class="result-icon" id="resultIcon"></div>
+        <div class="result-label" id="resultLabel"></div>
+        <div class="result-title" id="resultTitle"></div>
+        <div class="result-subtitle" id="resultSubtitle"></div>
+      </div>
+
+      <div class="prob-section">
+        <div class="prob-label-row">
+          <span>Diabetes Probability</span>
+          <strong id="probNum"></strong>
+        </div>
+        <div class="prob-bar-bg">
+          <div class="prob-bar-fill" id="probBar"></div>
+        </div>
+        <div class="prob-zone-labels">
+          <span>Low risk</span>
+          <span>50% threshold</span>
+          <span>High risk</span>
+        </div>
+      </div>
+
+      <div class="breakdown-section">
+        <div class="breakdown-title">Risk Factors</div>
+        <div id="factorsContainer"></div>
+      </div>
+    </div>
+
+    <!-- MODEL INFO CARD -->
+    <div class="info-card">
+      <h3>
+        <span class="icon">🤖</span>
+        Model Information
+      </h3>
+      <div class="metric-row">
+        <span class="metric-key">Algorithm</span>
+        <span class="metric-val" id="infoModel">–</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-key">Test Accuracy</span>
+        <span class="metric-val green" id="infoAcc">–</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-key">ROC-AUC Score</span>
+        <span class="metric-val green" id="infoAuc">–</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-key">Training Dataset</span>
+        <span class="metric-val">Pima Indians</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-key">Features Engineered</span>
+        <span class="metric-val">22 features</span>
+      </div>
+    </div>
+
+    <!-- REFERENCE TABLE CARD -->
+    <div class="ref-card">
+      <div class="ref-card-header">📋 Normal Value Reference</div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Normal Range</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Glucose</td><td>70 – 99 mg/dL</td></tr>
+          <tr><td>Blood Pressure</td><td>60 – 80 mmHg</td></tr>
+          <tr><td>BMI</td><td>18.5 – 24.9</td></tr>
+          <tr><td>Insulin</td><td>16 – 166 µU/mL</td></tr>
+          <tr><td>Skin Thickness</td><td>10 – 40 mm</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="disclaimer">
+      ⚠️ This tool is for educational purposes only and does not constitute medical advice. Please consult a healthcare professional for diagnosis.
+    </p>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // Sync slider ↔ number input
+  function syncSlider(id, val) {
+    const inp = document.getElementById(id);
+    inp.value = parseFloat(val).toFixed(id === 'bmi' ? 1 : id === 'diabetes_pedigree' ? 3 : 0);
+  }
+  function syncRange(sliderId, val) {
+    const slider = document.getElementById(sliderId);
+    slider.value = val;
+  }
+
+  // Load model info
+  fetch('/model_info')
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('modelName').textContent = d.model_name + ' Ensemble';
+      document.getElementById('heroAccuracy').textContent = d.accuracy + '%';
+      document.getElementById('heroAuc').textContent = d.roc_auc;
+      document.getElementById('infoModel').textContent = d.model_name;
+      document.getElementById('infoAcc').textContent = d.accuracy + '%';
+      document.getElementById('infoAuc').textContent = d.roc_auc;
+    })
+    .catch(() => {
+      document.getElementById('modelName').textContent = 'Gradient Boosting';
+    });
+
+  // Clear form
+  function clearForm() {
+    document.getElementById('pregnancies').value = '';
+    document.getElementById('age').value = '';
+    ['glucose','insulin','blood_pressure','skin_thickness','bmi','diabetes_pedigree'].forEach(id => {
+      const defaults = {glucose:120, insulin:100, blood_pressure:80, skin_thickness:20, bmi:28, diabetes_pedigree:0.5};
+      document.getElementById(id).value = defaults[id];
+      document.getElementById(id + 'Slider').value = defaults[id];
+    });
+    document.getElementById('resultCard').classList.add('hidden');
+  }
+
+  // Show toast
+  function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    setTimeout(() => t.className = 'toast', 3000);
+  }
+
+  // Build risk factors
+  function buildFactors(data, prob) {
+    const factors = [
+      {
+        name: 'Glucose Level',
+        value: parseFloat(data.glucose),
+        check: v => v > 125 ? 'risk' : v > 99 ? 'warning' : 'normal',
+        label: v => v > 125 ? 'High' : v > 99 ? 'Pre-diabetic' : 'Normal'
+      },
+      {
+        name: 'BMI',
+        value: parseFloat(data.bmi),
+        check: v => v > 30 ? 'risk' : v > 25 ? 'warning' : 'normal',
+        label: v => v > 30 ? 'Obese' : v > 25 ? 'Overweight' : 'Normal'
+      },
+      {
+        name: 'Blood Pressure',
+        value: parseFloat(data.blood_pressure),
+        check: v => v > 90 ? 'warning' : 'normal',
+        label: v => v > 90 ? 'Elevated' : 'Normal'
+      },
+      {
+        name: 'Age Risk',
+        value: parseFloat(data.age),
+        check: v => v > 45 ? 'warning' : 'normal',
+        label: v => v > 45 ? 'Elevated' : 'Normal'
+      },
+      {
+        name: 'Insulin Level',
+        value: parseFloat(data.insulin),
+        check: v => v > 166 ? 'warning' : v < 16 ? 'warning' : 'normal',
+        label: v => v > 166 ? 'High' : v < 16 ? 'Low' : 'Normal'
+      },
+    ];
+
+    return factors.map(f => `
+      <div class="factor-item">
+        <span class="factor-name">${f.name}</span>
+        <span class="factor-badge ${f.check(f.value)}">${f.label(f.value)}</span>
+      </div>
+    `).join('');
+  }
+
+  // Form submit
+  document.getElementById('predictForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const preg = document.getElementById('pregnancies').value;
+    const age = document.getElementById('age').value;
+
+    if (!preg || !age) {
+      showToast('Please fill in Pregnancies and Age', 'error');
+      if (!preg) document.getElementById('pregnancies').classList.add('error');
+      if (!age) document.getElementById('age').classList.add('error');
+      return;
+    }
+    document.getElementById('pregnancies').classList.remove('error');
+    document.getElementById('age').classList.remove('error');
+
+    const data = {
+      pregnancies: preg,
+      glucose: document.getElementById('glucose').value,
+      blood_pressure: document.getElementById('blood_pressure').value,
+      skin_thickness: document.getElementById('skin_thickness').value,
+      insulin: document.getElementById('insulin').value,
+      bmi: document.getElementById('bmi').value,
+      diabetes_pedigree: document.getElementById('diabetes_pedigree').value,
+      age: age
+    };
+
+    // Loading state
+    const btn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('submitText');
+    btn.disabled = true;
+    btnText.textContent = 'Analyzing...';
+    btn.innerHTML = '<div class="spinner"></div><span>Analyzing your data...</span>';
+
+    try {
+      const res = await fetch('/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+
+      if (result.error) throw new Error(result.error);
+
+      // Render result
+      const isHigh = result.prediction === 1;
+      const prob = result.probability;
+      const card = document.getElementById('resultCard');
+
+      card.classList.remove('hidden');
+
+      document.getElementById('resultIcon').className = 'result-icon ' + (isHigh ? 'high' : 'low');
+      document.getElementById('resultIcon').textContent = isHigh ? '⚠️' : '✅';
+      document.getElementById('resultLabel').className = 'result-label ' + (isHigh ? 'high' : 'low');
+      document.getElementById('resultLabel').textContent = isHigh ? 'High Risk Detected' : 'Low Risk';
+      document.getElementById('resultTitle').className = 'result-title ' + (isHigh ? 'high' : 'low');
+      document.getElementById('resultTitle').textContent = isHigh ? 'Diabetes Risk High' : 'Non-Diabetic';
+      document.getElementById('resultSubtitle').textContent = isHigh
+        ? 'Please consult a healthcare professional'
+        : 'Keep maintaining healthy habits';
+
+      const probNum = document.getElementById('probNum');
+      probNum.className = isHigh ? 'high' : 'low';
+      probNum.textContent = prob + '%';
+
+      const bar = document.getElementById('probBar');
+      bar.className = 'prob-bar-fill ' + (isHigh ? 'high' : 'low');
+      setTimeout(() => { bar.style.width = prob + '%'; }, 100);
+
+      document.getElementById('factorsContainer').innerHTML = buildFactors(data, prob);
+
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showToast('Prediction complete!');
+
+    } catch (err) {
+      showToast('Prediction failed: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="white" width="18" height="18"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><span id="submitText">Predict Diabetes Risk</span>';
+    }
+  });
+</script>
+</body>
+</html>
